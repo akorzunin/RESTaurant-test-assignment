@@ -1,6 +1,15 @@
 {
     "configurations": [
         {
+            "name": "Python: Current File",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "python": "C:\\Users\\akorz\\AppData\\Local\\pypoetry\\Cache\\virtualenvs\\restaurant-test-assignment-8JhLWE8j-py3.9\\Scripts\\python.exe"
+        },
+        {
             "name": "Docker: Python - Fastapi",
             "type": "docker",
             "request": "launch",

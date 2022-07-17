@@ -5,12 +5,12 @@ description = ""
 authors = ["WildElaeagnus <54314123+akorzunin@users.noreply.github.com>"]
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = "^3.9"
 fastapi = "^0.79.0"
 fastapi-mail = "^1.0.9"
 python-dotenv = "^0.20.0"
-bson = "^0.5.10"
 motor = "^3.0.0"
+uvicorn = "^0.18.2"
 
 [tool.poetry.dev-dependencies]
 

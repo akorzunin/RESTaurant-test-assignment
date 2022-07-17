@@ -4,7 +4,7 @@
 		{
 			"label": "fastapi run",
 			"type": "shell",
-			"command": "py -3.10 ./src/main.py",
+			"command": "C:\\Users\\akorz\\AppData\\Local\\pypoetry\\Cache\\virtualenvs\\restaurant-test-assignment-8JhLWE8j-py3.9\\Scripts\\python.exe ./src/main.py",
 			// "options": {
 			// 	"cwd": "${workspaceFolder}/src/"
 			// },
