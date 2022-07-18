@@ -1,5 +1,7 @@
 
 from fastapi import FastAPI
+from fastapi.responses import RedirectResponse
+
 from routes.mail import router as mail_router
 from routes.admin import router as admin_router
 from routes.user import router as user_router
@@ -38,7 +40,9 @@ app.include_router(
 )
 
 
-
+@app.get("/")
+async def docs_redirect():
+    return RedirectResponse(url='/docs')
 
 
 
