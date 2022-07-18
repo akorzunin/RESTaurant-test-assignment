@@ -66,6 +66,7 @@ table_example = dict(
     num_of_seats=4,
     is_avaliable=True,
     is_reserved=False,
+    price=1000,
 )
 class TableModel(BaseModel):
     id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
@@ -74,7 +75,7 @@ class TableModel(BaseModel):
     num_of_seats: int = Field(...)
     is_avaliable: bool = Field(...)
     is_reserved: bool = Field(...)
-    # tablename: str = Field(...)
+    price: float = Field(...)
 
     class Config:
         allow_population_by_field_name = True
@@ -90,6 +91,7 @@ class UpdateTableModel(BaseModel):
     num_of_seats: Optional[int]
     is_avaliable: Optional[bool]
     is_reserved: Optional[bool]
+    price: Optional[float]
 
     class Config:
         arbitrary_types_allowed = True

@@ -1,6 +1,6 @@
 import hashlib
 
-from fastapi import APIRouter, Depends, FastAPI, HTTPException, status
+from fastapi import APIRouter, Depends, FastAPI, HTTPException, status, Body
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 
 from db.db_connector import db
@@ -53,3 +53,63 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
 @router.get("/users/me")
 async def read_users_me(current_user: shemas.UserModel = Depends(get_current_active_user)):
     return current_user
+
+# set table reserved
+@router.put(
+    path="/reserve_table/{id}", 
+    response_description="Reserve/unreserve a table", 
+    response_model=shemas.TableModel,
+)
+async def reserve_table(
+    table_id: str, 
+    is_reserved: bool = True, 
+    current_user: shemas.UserModel = Depends(get_current_user),
+):
+    '''Set table reserved'''
+    if await db["tables"].find_one(dict(_id=table_id)):
+        return await crud.update_table(
+            db=db, 
+            id=table_id, 
+            table=shemas.UpdateTableModel(is_reserved=is_reserved)
+        )
+    raise HTTPException(status_code=404, detail=f"table {table_id} not found")
+
+# avaliable/unavaliable table
+@router.put(
+    path="/block_table/{id}", 
+    response_description="avaliable/unavaliable a table", 
+    response_model=shemas.TableModel,
+)
+async def block_table(
+    table_id: str, 
+    is_avaliable: bool = False, 
+    current_user: shemas.UserModel = Depends(get_current_user),
+):
+    '''Set table avaliable/unavaliable'''
+    if await db["tables"].find_one(dict(_id=table_id)):
+        return await crud.update_table(
+            db=db, 
+            id=table_id, 
+            table=shemas.UpdateTableModel(is_avaliable=is_avaliable)
+        )
+    raise HTTPException(status_code=404, detail=f"table {table_id} not found")
+
+# set table price
+@router.put(
+    path="/table_price/{id}", 
+    response_description="set table price", 
+    response_model=shemas.TableModel,
+)
+async def set_table_price(
+    table_id: str, 
+    price: float, 
+    current_user: shemas.UserModel = Depends(get_current_user),
+):
+    '''Set table price'''
+    if await db["tables"].find_one(dict(_id=table_id)):
+        return await crud.update_table(
+            db=db, 
+            id=table_id, 
+            table=shemas.UpdateTableModel(price=price)
+        )
+    raise HTTPException(status_code=404, detail=f"table {table_id} not found")
