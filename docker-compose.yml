@@ -1,4 +1,4 @@
-version: '3.8'
+version: '3.4'
 
 services:
   restauranttestassignment:
@@ -7,7 +7,7 @@ services:
       context: .
       dockerfile: ./Dockerfile
     ports:
-      - 9001:9001
+      - 8999:8999
     env_file:
       - .env
   mongodb:
