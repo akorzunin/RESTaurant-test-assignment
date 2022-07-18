@@ -1,11 +1,14 @@
-import hashlib
 
+import asyncio
 from fastapi import APIRouter, Depends, FastAPI, HTTPException, status, Body
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi.responses import JSONResponse
 
 from db.db_connector import db
 from db import crud, shemas
 from utils.password import hash_password
+from utils import mail_handle
+
 router = APIRouter()
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/admin/token")
@@ -115,3 +118,36 @@ async def set_table_price(
             table=shemas.UpdateTableModel(price=price)
         )
     raise HTTPException(status_code=404, detail=f"table {table_id} not found")
+
+@router.patch(
+    path="/confirm_reservation/", 
+    response_description="confirm reservation for a table", 
+    response_model=shemas.TableModel,
+)
+async def confirm_reservation(
+    table_name: str, 
+    username: str, 
+    current_user: shemas.UserModel = Depends(get_current_user),
+):
+    '''Set table reserved'''
+    if table := await db["tables"].find_one(dict(table_name=table_name)):
+        await crud.update_table(
+            db=db, 
+            id=table['_id'], 
+            table=shemas.UpdateTableModel(is_reserved=True)
+        )
+    else:
+        raise HTTPException(status_code=404, detail=f"table {table_name} not found")
+    if  user := await db["users"].find_one(dict(username=username)):
+        # send mail to user that table is reserved
+        user_mail = mail_handle.send_email_by_username(
+                username=username,
+                subject=f"Reserve {table['table_name']}", 
+                mail_text=f"{table['table_name']} is successfully reserved",
+            )
+        asyncio.gather(user_mail)
+        return JSONResponse(
+            status_code=status.HTTP_201_CREATED, 
+            content=f"{table['table_name']} is successfully reserved"
+        )
+    raise HTTPException(status_code=404, detail=f"User {username} not found")
