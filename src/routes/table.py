@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, FastAPI, Body, HTTPException, Response, status
 from fastapi.responses import JSONResponse
 
-from routes.admin import get_current_active_user
+from routes.admin import get_current_admin_user, get_current_any_user
 from db import crud, shemas
 from db.db_connector import db
 
@@ -11,7 +11,10 @@ router = APIRouter()
     response_description="List all tables", 
     response_model=list[shemas.TableModel],
 )
-async def list_tables():
+async def list_tables(
+    current_user: shemas.UserModel = Depends(get_current_any_user),
+):
+    '''Return all tables for any user'''
     return await db["tables"].find().to_list(1000)
 
 @router.post(
@@ -21,7 +24,7 @@ async def list_tables():
 )
 async def create_table(
     table: shemas.TableModel = Body(...), 
-    current_table: shemas.TableModel = Depends(get_current_active_user),
+    current_user: shemas.UserModel = Depends(get_current_admin_user),
 ):
     '''Add new table '''
     created, new_table = await crud.create_table(db, table)
@@ -36,13 +39,17 @@ async def create_table(
     response_description="Update a table", 
     response_model=shemas.TableModel,
 )
-async def update_table(id: str, table: shemas.UpdateTableModel = Body(...)):
+async def update_table(
+    id: str, 
+    table: shemas.UpdateTableModel = Body(...),
+    current_user: shemas.UserModel = Depends(get_current_admin_user),
+):
     if new_table := await crud.update_table(db, id, table):
         return new_table
     raise HTTPException(status_code=404, detail=f"table {id} not found")
 
 @router.delete("/{id}", response_description="Delete a table")
-async def delete_table(id: str):
+async def delete_table(id: str, current_user: shemas.UserModel = Depends(get_current_admin_user),):
     if await crud.delete_table_by_id(db, id):
         return Response(status_code=status.HTTP_204_NO_CONTENT)
     raise HTTPException(status_code=404, detail=f"table {id} not found")

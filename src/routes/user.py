@@ -1,8 +1,9 @@
 from typing import Literal
-from fastapi import APIRouter, Response, status
+from fastapi import APIRouter, Depends, Response, status
 from fastapi.responses import JSONResponse
 from db.db_connector import db
 from db import crud, shemas
+from routes.admin import get_current_any_user
 
 router = APIRouter()
 
@@ -44,8 +45,9 @@ async def find_table(
 )
 async def reserve_table(
     table_id: str,
+    current_user: shemas.UserModel = Depends(get_current_any_user),
 ):
-    '''Add new user '''
+    '''Reserve table for any user'''
     
     if await db['tables'].find_one(dict(
         _id=table_id,
@@ -66,13 +68,14 @@ async def reserve_table(
 # abort reservation
 @router.post(
     path="/abort_reservation", 
-    response_description="Reserve a table", 
+    response_description="Aabort table reservation", 
     response_model=shemas.UserModel,
 )
 async def abort_reservation(
     table_id: str,
+    current_user: shemas.UserModel = Depends(get_current_any_user),
 ):
-    '''Add new user '''
+    '''Aabort table reservation for any user'''
     
     if await db['tables'].find_one(dict(
         _id=table_id,

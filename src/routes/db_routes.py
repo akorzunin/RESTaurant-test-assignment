@@ -3,7 +3,7 @@
 from fastapi import APIRouter, Depends, FastAPI, Body, HTTPException, Response, status
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
-from routes.admin import get_current_active_user
+from routes.admin import get_current_admin_user
 
 from db import crud, shemas
 from db.db_connector import db, client
@@ -28,7 +28,7 @@ async def list_users():
 )
 async def create_user(
     user: shemas.UserModel = Body(...), 
-    current_user: shemas.UserModel = Depends(get_current_active_user),
+    # current_user: shemas.UserModel = Depends(get_current_active_user),
 ):
     '''Add new user '''
     created, new_user = await crud.create_user(db, user)
