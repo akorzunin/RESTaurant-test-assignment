@@ -1,7 +1,7 @@
 # RESTaurant-test-assignment
 Тестовое задание специально для ООО Гарант-Логистика
 
-### ТЗ задания
+### Описание задания
 [Download file](https://tinyurl.com/29bceuyh)
 
 ### Хост
